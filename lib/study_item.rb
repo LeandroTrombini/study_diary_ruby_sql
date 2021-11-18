@@ -3,10 +3,10 @@ require_relative 'category'
 
 class StudyItem 
     attr_accessor :id, :title, :category, :descr, :done
-    def initialize(id:, title:, category: Category.new, descr: 'Sem descrição', done: 'Em Andamento')
+    def initialize(id:, title:, category:, descr: 'Sem descrição', done: 'Em Andamento')
         @id = id
         @title = title
-        @category = category
+        @category = Category.new(name: category)
         @descr = descr
         @done = done
     end
@@ -22,7 +22,7 @@ class StudyItem
         end
       end
 
-      def self.save_to_db(category, title, descr)
+      def self.save_to_db(id, title, category, descr, done)
         db = SQLite3::Database.open 'db/database.db'
         db.execute "INSERT INTO task VALUES('#{ id }', '#{ title }', '#{ category }', '#{ descr }', '#{ done }')"
         db.close

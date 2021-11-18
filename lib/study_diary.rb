@@ -59,21 +59,22 @@ class StudyDiary
         nome = gets().chomp().to_s       
 
         puts "Digite a categoria do item: "
-        categoria = Category.new(name: gets().chomp().to_s)    
+        categoria = gets().chomp().to_s    
          
         puts "Digite uma descrição:"
         descricao = gets().chomp().to_s
           
         id_item = items.length + 1
         puts
-        items << StudyItem.new(id: id_item, title: nome, category: categoria, descr: descricao)
-        
+        items = StudyItem.new(id: id_item, title: nome, category: categoria, descr: descricao, done: done)
+        StudyItem.save_to_db(id_item, nome, categoria, descricao, 'Em andamento')
         puts "Item cadastrado!"     
         
         
     end
 
     def imprimir_itens(buscar_categoria = '')
+      items = StudyItem.all
         puts "========= Títulos cadastrados =========="
         if buscar_categoria == ''
             items.each do |item|
