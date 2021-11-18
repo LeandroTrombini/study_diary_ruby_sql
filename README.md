@@ -17,7 +17,11 @@
 
 #### Quer testar o projeto? Siga os seguintes passos:
 
+
 git clone https://github.com/LeandroTrombini/study_diary_ruby_sql
+
 cd study_diary
+
 bin/setup
+
 ruby lib/study_diary.rb
