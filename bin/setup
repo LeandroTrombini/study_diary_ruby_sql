@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+puts '== Instalando dependências =='
+system 'gem install bundler --conservative'
+system('bundle check') || system('bundle install')
+
+require 'sqlite3'
+
+puts "\n== Preparando banco de dados =="
+begin
+  db = SQLite3::Database.open "db/database.db"
+  db.execute <<~SQL
+    CREATE TABLE Tasks(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title varchar(255),
+      category varchar(255),
+      descr varchar(255),
+      done varchar(255)
+    );
+  SQL
+
+  seed_data = [[1,"Aula de inglês", "Curso", "Aprender"," Em andamento"],
+               [2,"Ruby", "Linguagem", "Escrever códigos","Em andamento"]]
+
+  seed_data.each do |data|
+    db.execute "INSERT INTO Tasks VALUES ( ?, ?, ?, ?, ? )", data
+  end
+
+rescue SQLite3::Exception => e
+  puts e
+ensure
+  db.close if db
+end
