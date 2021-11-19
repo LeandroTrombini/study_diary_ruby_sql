@@ -2,7 +2,6 @@ require_relative 'category'
 require_relative 'study_item'
 
 
-
 class StudyDiary
     attr_accessor :items
     def initialize(items: [])
@@ -12,15 +11,16 @@ class StudyDiary
 
     def menu
         opcao_selecionada = 0
-        while opcao_selecionada != 6
+        while opcao_selecionada != 7
             opcoes_menu = <<~MENU           
             ========= Menu ==========\n
         [1] Cadastrar um item para estudo
         [2] Remover um item 
         [3] Ver todos os itens cadastrados
         [4] Buscar um item         
-        [5] Concluído        
-        [6] Sair        
+        [5] Buscar itens concluídos         
+        [6] Marcar como concluído        
+        [7] Sair        
         Escolha uma opção:
         MENU
 
@@ -45,8 +45,10 @@ class StudyDiary
         when 4
             procurar_item
         when 5
-            concluido
+            procurar_item_concluido
         when 6
+            concluido
+        when 7
           puts "Você saiu do Diário de Estudos"
         else
           puts "Opção não encontrada. Tente novamente."
@@ -55,6 +57,7 @@ class StudyDiary
     end
 
     def cadastrar_item
+      items = StudyItem.all
         puts "Digite o título do item: "
         nome = gets().chomp().to_s       
 
@@ -66,16 +69,16 @@ class StudyDiary
           
         id_item = items.length + 1
         puts
-        items = StudyItem.new(id: id_item, title: nome, category: categoria, descr: descricao, done: done)
         StudyItem.save_to_db(id_item, nome, categoria, descricao, 'Em andamento')
-        puts "Item cadastrado!"     
         
+        puts "Item cadastrado!"          
         
     end
 
     def imprimir_itens(buscar_categoria = '')
       items = StudyItem.all
         puts "========= Títulos cadastrados =========="
+        puts
         if buscar_categoria == ''
             items.each do |item|
             puts "[#{item.id}] - Nome: #{item.title} / Categoria: #{item.category.name} / Descrição: #{item.descr} / Status: #{item.done}"      
@@ -95,45 +98,38 @@ class StudyDiary
     end
 
     def remover_item
-        puts "Digite o código do item a ser deletado:"
+      items = StudyItem.all
+        puts "Digite o código do item a ser deletado:"         
             item_para_deletar = gets().chomp().to_i
-            if item_para_deletar <= items.length
-              items.delete_at(item_para_deletar - 1)
+
+            if item_para_deletar != 0  
+              StudyItem.delete_by_id(item_para_deletar)              
               puts "#{item_para_deletar} removido!"
             else
               puts "Código não localizado. Tente novamente."
-            end
-
+            end            
       end
 
       def procurar_item
-        puts "Digite o nome do item que deseja buscar:"
-    
-        item = gets().chomp().to_s
-    
-        puts "Items encontrados"
-    
-        item_buscado = items.select {|i| i.title.downcase.include? item.downcase}
-        if item_buscado.length != 0
-            item_buscado.each do |item|
-            puts "[#{item.id}] - #{item.title} / Categoria: #{item.category.name} / Descrição: #{item.descr} / Status: #{item.done}"
-          end
-          puts "\n\n"
-        else
-          puts "Nenhum item encontrado com o termo de busca"
-        end
-    
+        items = StudyItem.all
+        puts "Digite o nome do item que deseja buscar:"       
+        item = gets().chomp().to_s    
+            
+            StudyItem.find_by_title(item)    
+      end
+
+      def procurar_item_concluido
+                      
+            StudyItem.all_done               
       end
 
 
       def concluido 
-        puts "Código a ser concluído: "
+        items = StudyItem.all
+        puts "Escolha um item para ser concluído: "
+        puts
         item_para_concluir = gets().chomp().to_i
-        if item_para_concluir <= items.length
-          items[item_para_concluir - 1].done = 'Concluído'
-        else
-          puts "Código não localizado. Tente novamente."
-        end
+        StudyItem.done(item_para_concluir)
 
       end
     
