@@ -7,25 +7,31 @@ class StudyDiary
     def initialize(items: [])
         @items = items
     end
-
+    REGISTER = 1
+    DELETE = 2
+    ALL = 3
+    SEARCH_ITEM = 4
+    SEARCH_DONE = 5
+    DONE = 6
+    EXIT = 7
 
     def menu
         opcao_selecionada = 0
-        while opcao_selecionada != 7
+        while opcao_selecionada != EXIT
             opcoes_menu = <<~MENU           
             ========= Menu ==========\n
-        [1] Cadastrar um item para estudo
-        [2] Remover um item 
-        [3] Ver todos os itens cadastrados
-        [4] Buscar um item         
-        [5] Buscar itens concluídos         
-        [6] Marcar como concluído        
-        [7] Sair        
+        [#{REGISTER}] Cadastrar um item para estudo
+        [#{DELETE}] Remover um item 
+        [#{ALL}] Ver todos os itens cadastrados
+        [#{SEARCH_ITEM}] Buscar um item         
+        [#{SEARCH_DONE}] Buscar itens concluídos         
+        [#{DONE}] Marcar como concluído        
+        [#{EXIT}] Sair        
         Escolha uma opção:
         MENU
 
         puts opcoes_menu
-        opcao_selecionada = gets().chomp().to_i
+        opcao_selecionada = gets.to_i
 
         case opcao_selecionada
         when 1
@@ -100,7 +106,7 @@ class StudyDiary
     def remover_item
       items = StudyItem.all
         puts "Digite o código do item a ser deletado:"         
-            item_para_deletar = gets().chomp().to_i
+            item_para_deletar = gets.to_i
 
             if item_para_deletar != 0  
               StudyItem.delete_by_id(item_para_deletar)              
@@ -126,9 +132,15 @@ class StudyDiary
 
       def concluido 
         items = StudyItem.all
-        puts "Escolha um item para ser concluído: "
         puts
-        item_para_concluir = gets().chomp().to_i
+        items.each do |item|
+          puts "[#{item.id}] - Nome: #{item.title} / Categoria: #{item.category.name} / Descrição: #{item.descr} / Status: #{item.done}"   
+        end    
+          puts 
+          puts "Escolha um item para ser concluído: "
+        
+        puts
+        item_para_concluir = gets.to_i
         StudyItem.done(item_para_concluir)
 
       end

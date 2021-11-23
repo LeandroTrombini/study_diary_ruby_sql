@@ -58,13 +58,12 @@ class StudyItem
         db.results_as_hash = true
         tasks = db.execute  "SELECT id, title, category, descr, done FROM tasks where done LIKE 'Concluído'"
         db.close    
-        tasks.map do |task|
-          new(id: task['id'], title: task['title'], category: task['category'], descr: task['descr'], done: task['done'])
+        tasks.map {|task| new(id: task['id'], title: task['title'], category: task['category'], descr: task['descr'], done: task['done'])}
         print "Os itens concluídos são: "
         puts
         tasks.each { |task| print "\n#{task['id']} - #{task['title']} - #{task['category']} - #{task['descript']} - #{task['done']}\n"}
         puts
-        end
+        
       end
      
       def self.done(id)
